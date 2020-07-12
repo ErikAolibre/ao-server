@@ -1542,6 +1542,21 @@ Public Type tCrafting
 
 End Type
 
+' Info de los retos
+Public Type tUserRetoTemp
+    Tipo As eTipoReto
+    RequiredGld As Long
+    Users() As String
+    Accepts() As Byte
+End Type
+
+'Info de los Amigos
+Public Type Amigos
+    Nombre As String
+    Ignorado As Byte
+    index As Integer
+End Type
+
 'CHOTS | Accounts
 Public Type AccountUser
 
@@ -1562,20 +1577,13 @@ Public Type AccountUser
 
 End Type
 
-' Info de los retos
-Public Type tUserRetoTemp
-    Tipo As eTipoReto
-    RequiredGld As Long
-    Users() As String
-    Accepts() As Byte
-End Type
-
-'Info de los Amigos
-Public Type Amigos
-  Nombre As String
-  Ignorado As Byte
-index As Integer
-
+Public Type UserAccount
+    
+    ID As Long
+    Hash As String
+    Logged As Boolean
+    Personajes() As AccountUser
+    
 End Type
 
 'Tipo de los Usuarios
@@ -1584,8 +1592,8 @@ Public Type User
     RetoTemp As tUserRetoTemp
     
     Name As String
-    ID As Long 'CHOTS | Database ID
-    AccountHash As String 'CHOTS | Account ID
+    
+    Account As UserAccount
     
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
     

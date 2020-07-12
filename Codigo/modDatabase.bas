@@ -83,13 +83,13 @@ Sub SaveUserToDatabase(ByVal Userindex As Integer, _
 
     With UserList(Userindex)
     
-        If GetCountUserAccount(.AccountHash) >= 10 Then
+        If GetCountUserAccount(.Account.Hash) >= 10 Then
             Call WriteErrorMsg(Userindex, "No puedes crear mas de 10 personajes.")
             Call CloseSocket(Userindex)
             Exit Sub
         End If
 
-        If .ID > 0 Then
+        If .Account.ID > 0 Then
             Call UpdateUserToDatabase(Userindex, SaveTimeOnline)
         Else
             Call InsertUserToDatabase(Userindex, SaveTimeOnline)
@@ -171,7 +171,7 @@ Sub InsertUserToDatabase(ByVal Userindex As Integer, _
 
         query = "INSERT INTO user SET "
         query = query & "name = '" & .Name & "', "
-        query = query & "account_id = (SELECT id FROM account WHERE hash = '" & .AccountHash & "'), "
+        query = query & "account_id = (SELECT id FROM account WHERE hash = '" & .Account.Hash & "'), "
         query = query & "level = " & .Stats.ELV & ", "
         query = query & "exp = " & .Stats.Exp & ", "
         query = query & "elu = " & .Stats.ELU & ", "
@@ -223,14 +223,14 @@ Sub InsertUserToDatabase(ByVal Userindex As Integer, _
         UserId = val(Database_RecordSet.Fields(0).Value)
         Set Database_RecordSet = Nothing
 
-        .ID = UserId
+        .Account.ID = UserId
 
         'User attributes
         query = "INSERT INTO attribute (user_id, number, value) VALUES "
 
         For LoopC = 1 To NUMATRIBUTOS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserAtributos(LoopC) & ")"
 
@@ -250,7 +250,7 @@ Sub InsertUserToDatabase(ByVal Userindex As Integer, _
 
         For LoopC = 1 To MAXUSERHECHIZOS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserHechizos(LoopC) & ")"
 
@@ -270,7 +270,7 @@ Sub InsertUserToDatabase(ByVal Userindex As Integer, _
 
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Invent.Object(LoopC).ObjIndex & ", "
             query = query & .Invent.Object(LoopC).Amount & ", "
@@ -292,7 +292,7 @@ Sub InsertUserToDatabase(ByVal Userindex As Integer, _
 
         For LoopC = 1 To NUMSKILLS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserSkills(LoopC) & ", "
             query = query & .Stats.ExpSkills(LoopC) & ", "
@@ -420,18 +420,18 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         query = query & "matados_ingreso = " & .Faccion.MatadosIngreso & ", "
         query = query & "siguiente_recompensa = " & .Faccion.NextRecompensa & ", "
         query = query & "guild_index = " & .GuildIndex & " "
-        query = query & "WHERE id = " & .ID & ";"
+        query = query & "WHERE id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         'User attributes
-        query = "DELETE FROM attribute WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM attribute WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO attribute (user_id, number, value) VALUES "
 
         For LoopC = 1 To NUMATRIBUTOS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserAtributos(LoopC) & ")"
 
@@ -447,14 +447,14 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         Call Database_Connection.Execute(query)
 
         'User spells
-        query = "DELETE FROM spell WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM spell WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO spell (user_id, number, spell_id) VALUES "
 
         For LoopC = 1 To MAXUSERHECHIZOS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserHechizos(LoopC) & ")"
 
@@ -470,14 +470,14 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         Call Database_Connection.Execute(query)
 
         'User inventory
-        query = "DELETE FROM inventory_item WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM inventory_item WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO inventory_item (user_id, number, item_id, amount, is_equipped) VALUES "
 
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Invent.Object(LoopC).ObjIndex & ", "
             query = query & .Invent.Object(LoopC).Amount & ", "
@@ -495,14 +495,14 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         Call Database_Connection.Execute(query)
 
         'User bank inventory
-        query = "DELETE FROM bank_item WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM bank_item WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO bank_item (user_id, number, item_id, amount) VALUES "
 
         For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .BancoInvent.Object(LoopC).ObjIndex & ", "
             query = query & .BancoInvent.Object(LoopC).Amount & ")"
@@ -519,14 +519,14 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         Call Database_Connection.Execute(query)
 
         'User skills
-        query = "DELETE FROM skillpoint WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM skillpoint WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO skillpoint (user_id, number, value, exp, elu) VALUES "
 
         For LoopC = 1 To NUMSKILLS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
             query = query & .Stats.UserSkills(LoopC) & ", "
             query = query & .Stats.ExpSkills(LoopC) & ", "
@@ -546,14 +546,14 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
         'User pets
         Dim petType As Integer
 
-        query = "DELETE FROM pet WHERE user_id = " & .ID & ";"
+        query = "DELETE FROM pet WHERE user_id = " & .Account.ID & ";"
         Call Database_Connection.Execute(query)
 
         query = "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
         For LoopC = 1 To MAXMASCOTAS
             query = query & "("
-            query = query & .ID & ", "
+            query = query & .Account.ID & ", "
             query = query & LoopC & ", "
 
             'CHOTS | I got this logic from SaveUserToCharfile
@@ -617,7 +617,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         If Database_RecordSet.BOF Or Database_RecordSet.EOF Then Exit Sub
 
         'Start setting data
-        .ID = Database_RecordSet!ID
+        .Account.ID = Database_RecordSet!ID
         .Name = Database_RecordSet!Name
         .Stats.ELV = Database_RecordSet!level
         .Stats.Exp = Database_RecordSet!Exp
@@ -714,7 +714,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User attributes
-        query = "SELECT * FROM attribute WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM attribute WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
     
         If Not Database_RecordSet.RecordCount = 0 Then
@@ -733,7 +733,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User spells
-        query = "SELECT * FROM spell WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM spell WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
 
         If Not Database_RecordSet.RecordCount = 0 Then
@@ -751,7 +751,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User pets
-        query = "SELECT * FROM pet WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM pet WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
 
         If Not Database_RecordSet.RecordCount = 0 Then
@@ -769,7 +769,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User inventory
-        query = "SELECT * FROM inventory_item WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM inventory_item WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
 
         If Not Database_RecordSet.RecordCount = 0 Then
@@ -789,7 +789,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User bank inventory
-        query = "SELECT * FROM bank_item WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM bank_item WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
 
         If Not Database_RecordSet.RecordCount = 0 Then
@@ -808,7 +808,7 @@ Sub LoadUserFromDatabase(ByVal Userindex As Integer)
         Set Database_RecordSet = Nothing
 
         'User skills
-        query = "SELECT * FROM skillpoint WHERE user_id = " & .ID & ";"
+        query = "SELECT * FROM skillpoint WHERE user_id = " & .Account.ID & ";"
         Set Database_RecordSet = Database_Connection.Execute(query)
 
         If Not Database_RecordSet.RecordCount = 0 Then

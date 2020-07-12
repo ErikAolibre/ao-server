@@ -394,7 +394,7 @@ Sub ConnectNewUser(ByVal Userindex As Integer, _
         .Hogar = Hogar
 
         'CHOTS | Accounts
-        .AccountHash = AccountHash
+        .Account.Hash = AccountHash
 
         'Primero agregamos los items, ya que en caso de que el nivel
         'Inicial sea mayor al de un newbie, los items se borran automaticamente.
@@ -1647,8 +1647,8 @@ Sub ResetBasicUserInfo(ByVal Userindex As Integer)
     '*************************************************
     With UserList(Userindex)
         .Name = vbNullString
-        .ID = 0
-        .AccountHash = vbNullString
+        .Account.ID = 0
+        .Account.Hash = vbNullString
         .Desc = vbNullString
         .DescRM = vbNullString
         .Pos.Map = 0
