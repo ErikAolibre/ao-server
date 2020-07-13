@@ -370,19 +370,31 @@ Public Function CuentaExiste(ByVal UserName As String) As Boolean
 End Function
 
 Public Function PersonajePerteneceCuenta(ByVal UserName As String, _
-                                         ByVal AccountHash As String) As Boolean
+                                         ByVal Userindex As Integer) As Boolean
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 18/10/2018
     '***************************************************
-    If Not Database_Enabled Then
-        PersonajePerteneceCuenta = PersonajePerteneceCuentaCharfile(UserName, AccountHash)
-    Else
-        PersonajePerteneceCuenta = PersonajePerteneceCuentaDatabase(UserName, AccountHash)
+    
+    With UserList(Userindex).Account
+    
+        Dim i As Long
+        For i = 1 To UBound(.Personajes)
+        
+            If .Personajes(i).Name = Name Then
+                PersonajePerteneceCuenta = True
+                Exit Function
+            End If
+            
+        Next
 
-    End If
-
+    End With
+    
+    PersonajePerteneceCuenta = False
+    
+    Exit Function
+    
 End Function
 
 Public Sub UnBan(ByVal Name As String)

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Cuentas"
 Option Explicit
 
-Sub LoadUserFromCharfile(ByVal Userindex As Integer)
+Sub LoadUserFromCharfile(ByVal UserIndex As Integer)
 
     '*************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -11,18 +11,18 @@ Sub LoadUserFromCharfile(ByVal Userindex As Integer)
     Dim Leer As clsIniManager
     Set Leer = New clsIniManager
 
-    Call Leer.Initialize(CharPath & UCase$(UserList(Userindex).Name) & ".chr")
+    Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).Name) & ".chr")
 
     'Cargamos los datos del personaje
-    Call LoadUserInit(Userindex, Leer)
+    Call LoadUserInit(UserIndex, Leer)
     
     'Cargamos las estadisticas del usuario
-    Call LoadUserStats(Userindex, Leer)
+    Call LoadUserStats(UserIndex, Leer)
     
     'Cargamos las estadisticas de las quests
-    Call LoadQuestStats(Userindex, Leer)
+    Call LoadQuestStats(UserIndex, Leer)
 
-    Call LoadUserReputacion(Userindex, Leer)
+    Call LoadUserReputacion(UserIndex, Leer)
 
     Set Leer = Nothing
 
@@ -80,7 +80,7 @@ Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
                 Call WriteVar(AccountCharfile, "INIT", "CANTIDADPERSONAJES", NumberOfCharacters - 1)
 
                 'Por ultimo borramos el archivo.
-                Kill(CharPath & UCase$(UserName) & ".chr")
+                Kill (CharPath & UCase$(UserName) & ".chr")
                 
                 Exit Sub
             End If
@@ -182,13 +182,13 @@ Public Function PersonajeCantidadVotosCharfile(ByVal UserName As String) As Inte
 
 End Function
 
-Public Sub MarcarPjComoQueYaVotoCharfile(ByVal Userindex As Integer, _
+Public Sub MarcarPjComoQueYaVotoCharfile(ByVal UserIndex As Integer, _
                                          ByVal NumeroEncuesta As Integer)
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 19/09/2018
     '***************************************************
-    Call WriteVar(CharPath & UserList(Userindex).Name & ".chr", "CONSULTAS", "Voto", str(NumeroEncuesta))
+    Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "CONSULTAS", "Voto", str(NumeroEncuesta))
 
 End Sub
 
@@ -202,7 +202,7 @@ Public Function GetUserAmountOfPunishmentsCharfile(ByVal UserName As String) As 
 
 End Function
 
-Public Sub SendUserPunishmentsCharfile(ByVal Userindex As Integer, _
+Public Sub SendUserPunishmentsCharfile(ByVal UserIndex As Integer, _
                                        ByVal UserName As String, _
                                        ByVal Count As Integer)
 
@@ -212,7 +212,7 @@ Public Sub SendUserPunishmentsCharfile(ByVal Userindex As Integer, _
     '***************************************************
     While Count > 0
 
-        Call WriteConsoleMsg(Userindex, Count & " - " & GetVar(CharPath & UserName & ".chr", "PENAS", "P" & Count), FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, Count & " - " & GetVar(CharPath & UserName & ".chr", "PENAS", "P" & Count), FontTypeNames.FONTTYPE_INFO)
         Count = Count - 1
     Wend
 
@@ -668,7 +668,7 @@ Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, _
 
 End Sub
 
-Sub SendCharacterInfoCharfile(ByVal Userindex As Integer, ByVal UserName As String)
+Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As String)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -705,7 +705,7 @@ Sub SendCharacterInfoCharfile(ByVal Userindex As Integer, ByVal UserName As Stri
     With UserFile
         .Initialize (CharPath & UserName & ".chr")
     
-        Call Protocol.WriteCharacterInfo(Userindex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("REP", "Promedio"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
+        Call Protocol.WriteCharacterInfo(UserIndex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("REP", "Promedio"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
 
     End With
     
@@ -725,7 +725,6 @@ Public Sub SaveNewAccountCharfile(ByVal UserName As String, _
     On Error GoTo ErrorHandler
 
     Dim Manager     As clsIniManager
-
     Dim AccountFile As String
 
     'CHOTS | First the account itself
@@ -733,27 +732,15 @@ Public Sub SaveNewAccountCharfile(ByVal UserName As String, _
     AccountFile = AccountPath & UCase$(UserName) & ".acc"
 
     With Manager
-
+        
+        Call .ChangeValue("INIT", "UserName", UCase$(UserName))
         Call .ChangeValue("INIT", "Password", Password)
         Call .ChangeValue("INIT", "Salt", Salt)
         Call .ChangeValue("INIT", "Hash", Hash)
         Call .ChangeValue("INIT", "FechaCreado", Date & " " & time)
-
-        Call .DumpFile(AccountFile)
-
-    End With
-
-    Set Manager = Nothing
-
-    'CHOTS | Now the account char files
-    Set Manager = New clsIniManager
-    AccountFile = AccountPath & Hash & ".ach"
-
-    With Manager
-        Call .ChangeValue("INIT", "UserName", UCase$(UserName))
         Call .ChangeValue("INIT", "CantidadPersonajes", 0)
-
-        .DumpFile (AccountFile)
+        
+        Call .DumpFile(AccountFile)
 
     End With
 
@@ -791,25 +778,32 @@ Public Function PersonajePerteneceCuentaCharfile(ByVal UserName As String, _
 End Function
 
 Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
-                                     ByVal AccountHash As String)
+                                     ByVal UserIndex As Integer)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 18/10/2018
     '***************************************************
     Dim CantidadPersonajes As Byte
-
     Dim AccountCharfile    As String
+    
+    Dim NewCharfile As clsIniManager
+    Set NewCharfile = New clsIniManager
 
-    AccountCharfile = AccountPath & AccountHash & ".ach"
+    AccountCharfile = AccountPath & UCase$(UserList(UserIndex).Account.UserName) & ".ach"
 
     If FileExist(AccountCharfile) Then
-        CantidadPersonajes = val(GetVar(AccountCharfile, "INIT", "CantidadPersonajes"))
+        
+        Call NewCharfile.Initialize(AccountCharfile)
+        
+        CantidadPersonajes = val(NewCharfile.GetValue("INIT", "CantidadPersonajes"))
         CantidadPersonajes = CantidadPersonajes + 1
 
         If CantidadPersonajes <= 10 Then
-            Call WriteVar(AccountCharfile, "INIT", "CantidadPersonajes", CantidadPersonajes)
-            Call WriteVar(AccountCharfile, "PERSONAJES", "Personaje" & CantidadPersonajes, UserName)
+            Call NewCharfile.ChangeValue("INIT", "CantidadPersonajes", CantidadPersonajes)
+            Call NewCharfile.ChangeValue("PERSONAJES", "Personaje" & CantidadPersonajes, UserName)
+            Call NewCharfile.DumpFile(AccountCharfile)
+            
         Else
             Call LogError("Error in SaveUserToAccountCharfile. Se intento crear mas de 10 personajes. Username: " & UserName & ". Hash: " & AccountHash)
 
@@ -819,10 +813,12 @@ Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
         Call LogError("Error in SaveUserToAccountCharfile. Cuenta inexistente de " & UserName & ". Hash: " & AccountHash)
 
     End If
-
+    
+    Set AccountCharfile = Nothing
+    
 End Sub
 
-Public Sub LoginAccountCharfile(ByVal Userindex As Integer, ByVal UserName As String)
+Public Sub LoginAccountCharfile(ByVal UserIndex As Integer, ByVal UserName As String)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -841,18 +837,21 @@ Public Sub LoginAccountCharfile(ByVal Userindex As Integer, ByVal UserName As St
 
     Set Account = New clsIniManager
     Set CharFile = New clsIniManager
-
-    AccountHash = GetVar(AccountPath & UCase$(UserName) & ".acc", "INIT", "Hash")
     
-    Call Account.Initialize(AccountPath & AccountHash & ".ach")
+    'Leemos el archivo .acc
+    Call Account.Initialize(AccountPath & UCase$(UserName) & ".acc")
     
     NumberOfCharacters = val(Account.GetValue("INIT", "CantidadPersonajes"))
     
-    With UserList(Userindex).Account
-    
+    With UserList(UserIndex).Account
+        
+        'Seteamos el UserName de la cuenta.
+        .UserName = UserName
+        
         If NumberOfCharacters > 0 Then
 
             For i = 1 To NumberOfCharacters
+            
                 CurrentCharacter = Account.GetValue("PERSONAJES", "Personaje" & i)
 
                 Call CharFile.Initialize(CharPath & CurrentCharacter & ".chr")
@@ -886,7 +885,7 @@ Public Sub LoginAccountCharfile(ByVal Userindex As Integer, ByVal UserName As St
         'Marcamos como que ya se inicio sesion en esa cuenta.
         .Logged = True
         
-        Call WriteUserAccountLogged(Userindex, UserName, AccountHash, NumberOfCharacters, .Personajes)
+        Call WriteUserAccountLogged(UserIndex, UserName, NumberOfCharacters, .Personajes)
     
     End With
     
@@ -931,7 +930,7 @@ Public Function GetUserAmountOfPunishments(ByVal UserName As String) As Integer
 
 End Function
 
-Public Sub SendUserPunishments(ByVal Userindex As Integer, _
+Public Sub SendUserPunishments(ByVal UserIndex As Integer, _
                                ByVal UserName As String, _
                                ByVal Count As Integer)
 
@@ -941,9 +940,9 @@ Public Sub SendUserPunishments(ByVal Userindex As Integer, _
     'Writes a console msg for each punishment
     '***************************************************
     If Not Database_Enabled Then
-        Call SendUserPunishmentsCharfile(Userindex, UserName, Count)
+        Call SendUserPunishmentsCharfile(UserIndex, UserName, Count)
     Else
-        Call SendUserPunishmentsDatabase(Userindex, UserName, Count)
+        Call SendUserPunishmentsDatabase(UserIndex, UserName, Count)
 
     End If
 

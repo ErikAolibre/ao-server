@@ -1580,6 +1580,7 @@ End Type
 Public Type UserAccount
     
     ID As Long
+    UserName As String
     Hash As String
     Logged As Boolean
     Personajes() As AccountUser
