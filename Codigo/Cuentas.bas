@@ -778,7 +778,7 @@ Public Function PersonajePerteneceCuentaCharfile(ByVal UserName As String, _
 End Function
 
 Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
-                                     ByVal UserIndex As Integer)
+                                     ByVal Userindex As Integer)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -786,14 +786,13 @@ Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
     '***************************************************
     Dim CantidadPersonajes As Byte
     Dim AccountCharfile    As String
-    
-    Dim NewCharfile As clsIniManager
-    Set NewCharfile = New clsIniManager
 
-    AccountCharfile = AccountPath & UCase$(UserList(UserIndex).Account.UserName) & ".ach"
+    AccountCharfile = AccountPath & UCase$(UserList(Userindex).Account.UserName) & ".acc"
 
     If FileExist(AccountCharfile) Then
         
+        Dim NewCharfile As clsIniManager
+        Set NewCharfile = New clsIniManager
         Call NewCharfile.Initialize(AccountCharfile)
         
         CantidadPersonajes = val(NewCharfile.GetValue("INIT", "CantidadPersonajes"))
@@ -805,17 +804,17 @@ Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
             Call NewCharfile.DumpFile(AccountCharfile)
             
         Else
-            Call LogError("Error in SaveUserToAccountCharfile. Se intento crear mas de 10 personajes. Username: " & UserName & ". Hash: " & AccountHash)
+            Call LogError("Error in SaveUserToAccountCharfile. Se intento crear mas de 10 personajes. Username: " & UserName)
 
         End If
-
+        
+        Set NewCharfile = Nothing
+        
     Else
-        Call LogError("Error in SaveUserToAccountCharfile. Cuenta inexistente de " & UserName & ". Hash: " & AccountHash)
+        Call LogError("Error in SaveUserToAccountCharfile. Cuenta inexistente de " & UserName)
 
     End If
-    
-    Set AccountCharfile = Nothing
-    
+     
 End Sub
 
 Public Sub LoginAccountCharfile(ByVal UserIndex As Integer, ByVal UserName As String)

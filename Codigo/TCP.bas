@@ -824,7 +824,7 @@ Sub ConnectAccount(ByVal UserIndex As Integer, _
         Call LoginAccountDatabase(UserIndex, UserName)
         
     End If
-
+   
 End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer)
@@ -1079,7 +1079,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         End If
     
         'Es el passwd valido?
-        If Not PersonajePerteneceCuenta(Name) Then
+        If Not PersonajePerteneceCuenta(Name, UserIndex) Then
             Call WriteErrorMsg(UserIndex, "Ha ocurrido un error, por favor inicie sesion nuevamente.")
             Call CloseSocket(UserIndex)
             Exit Sub

@@ -442,7 +442,7 @@ Public Function HandleIncomingData(ByVal Userindex As Integer) As Boolean
                 Or packetID = ClientPacketID.CambiarContrasena) Then
             
             'Vierifico si el user esta logeado
-            If Not .flags.UserLogged Then
+            If Not .Account.Logged Then
                 Call CloseSocket(Userindex)
                 Exit Function
             
@@ -22886,6 +22886,9 @@ Private Sub HandleLoginExistingAccount(ByVal Userindex As Integer)
     UserName = buffer.ReadASCIIString()
     Password = buffer.ReadASCIIString()
     
+    'Convert version number to string
+    version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
+    
     'If we got here then packet is complete, copy data back to original queue
     Call UserList(Userindex).incomingData.CopyBuffer(buffer)
 
@@ -22895,9 +22898,6 @@ Private Sub HandleLoginExistingAccount(ByVal Userindex As Integer)
         Exit Sub
 
     End If
-
-    'Convert version number to string
-    version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
 
     If Not VersionOK(version) Then
         Call WriteErrorMsg(Userindex, "Esta version del juego es obsoleta, la ultima version es la " & ULTIMAVERSION & ". Tu Version " & version & ". La misma se encuentra disponible en www.argentumonline.org")
