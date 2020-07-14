@@ -382,7 +382,7 @@ Public Function PersonajePerteneceCuenta(ByVal UserName As String, _
         Dim i As Long
         For i = 1 To UBound(.Personajes)
         
-            If .Personajes(i).Name = Name Then
+            If .Personajes(i).Name = UserName Then
                 PersonajePerteneceCuenta = True
                 Exit Function
             End If

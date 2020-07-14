@@ -1583,7 +1583,7 @@ Public Type UserAccount
     UserName As String
     Hash As String
     Logged As Boolean
-    Personajes() As AccountUser
+    Personajes(1 To 9) As AccountUser
     
 End Type
 
