@@ -5,18 +5,17 @@
 # By Juan Andres Dalmasso (CHOTS)
 # Last modification: 10/10/2018 (CHOTS)
 
-CREATE TABLE account (
+CREATE TABLE `account` (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(64) NOT NULL,
     salt VARCHAR(10) NOT NULL,
-    hash VARCHAR(32) NOT NULL,
-    date_created TIMESTAMP NOT NULL,
-    date_last_login TIMESTAMP NOT NULL,
+    date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_ip VARCHAR(16)
 );
 
-CREATE TABLE user (
+CREATE TABLE `user` (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     account_id MEDIUMINT UNSIGNED NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -133,7 +132,7 @@ CREATE TABLE user (
     INDEX (name)
 );
 
-CREATE TABLE spell (
+CREATE TABLE `spell` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     spell_id SMALLINT UNSIGNED,
@@ -142,7 +141,7 @@ CREATE TABLE spell (
     CONSTRAINT fk_spell_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE pet (
+CREATE TABLE `pet` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     pet_id SMALLINT UNSIGNED,
@@ -151,7 +150,7 @@ CREATE TABLE pet (
     CONSTRAINT fk_pet_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE attribute (
+CREATE TABLE `attribute` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     value TINYINT UNSIGNED NOT NULL,
@@ -160,7 +159,7 @@ CREATE TABLE attribute (
     CONSTRAINT fk_attribute_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE punishment (
+CREATE TABLE `punishment` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     reason VARCHAR(255) NOT NULL,
@@ -169,7 +168,7 @@ CREATE TABLE punishment (
     CONSTRAINT fk_punishment_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE inventory_item (
+CREATE TABLE `inventory_item` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     item_id SMALLINT UNSIGNED,
@@ -180,7 +179,7 @@ CREATE TABLE inventory_item (
     CONSTRAINT fk_inventory_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE bank_item (
+CREATE TABLE `bank_item` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     item_id SMALLINT UNSIGNED,
@@ -190,7 +189,7 @@ CREATE TABLE bank_item (
     CONSTRAINT fk_bank_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE skillpoint (
+CREATE TABLE `skillpoint` (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     number TINYINT UNSIGNED NOT NULL,
     value TINYINT UNSIGNED NOT NULL,
