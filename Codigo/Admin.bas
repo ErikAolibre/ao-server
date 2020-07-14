@@ -290,11 +290,11 @@ Public Sub Encarcelar(ByVal Userindex As Integer, _
 
 End Sub
 
-Public Sub BorrarUsuario(ByVal Userindex As Integer, ByVal UserName As String, ByVal AccountHash As String)
+Public Sub BorrarUsuario(ByVal Userindex As Integer, ByVal UserName As String)
 
     '********************************************************************************
     'Author: Recox
-    'Last Modification: 09/03/2020
+    'Last Modification: 14/07/2020
     '18/09/2018 CHOTS: Checks database too
     '09/03/2020 Lorwik: Agregado chequeos PersonajeExiste y PersonajePerteneceCuenta
     '********************************************************************************
@@ -307,17 +307,18 @@ Public Sub BorrarUsuario(ByVal Userindex As Integer, ByVal UserName As String, B
     End If
 
     'IMPORTANTE! - El personaje pertenece a esta cuenta?
-    If Not PersonajePerteneceCuenta(UserName, AccountHash) Then
+    If Not PersonajePerteneceCuenta(UserName, Userindex) Then
         Call WriteErrorMsg(Userindex, "Ha ocurrido un error, por favor inicie sesion nuevamente.")
-        
         Call CloseSocket(Userindex)
         Exit Sub
     End If
     
     If Not Database_Enabled Then
         Call BorrarUsuarioCharfile(UserName)
+        
     Else
         Call BorrarUsuarioDatabase(UserName)
+        
     End If
 
 End Sub
@@ -464,22 +465,22 @@ Public Sub CopyUser(ByVal UserName As String, ByVal newName As String)
 
 End Sub
 
-Public Sub BanIpAgrega(ByVal IP As String)
+Public Sub BanIpAgrega(ByVal ip As String)
     '***************************************************
     'Author: Unknown
     'Last Modification: -
     '
     '***************************************************
 
-    Call BanIps.Add(IP)
+    Call BanIps.Add(ip)
     Call BanIpGuardar
     
     ' Agrego la regla al firewall para que bloquee la IP
-    Call Shell("netsh.exe advfirewall firewall add rule name=""Baneo de IP " & IP & """ dir=in protocol=any action=block remoteip=" & IP)
+    Call Shell("netsh.exe advfirewall firewall add rule name=""Baneo de IP " & ip & """ dir=in protocol=any action=block remoteip=" & ip)
     
 End Sub
 
-Public Function BanIpBuscar(ByVal IP As String) As Long
+Public Function BanIpBuscar(ByVal ip As String) As Long
     '***************************************************
     'Author: Unknown
     'Last Modification: -
@@ -493,7 +494,7 @@ Public Function BanIpBuscar(ByVal IP As String) As Long
     LoopC = 1
 
     Do While LoopC <= BanIps.Count And Dale
-        Dale = (BanIps.Item(LoopC) <> IP)
+        Dale = (BanIps.Item(LoopC) <> ip)
         LoopC = LoopC + 1
     Loop
     
@@ -506,7 +507,7 @@ Public Function BanIpBuscar(ByVal IP As String) As Long
 
 End Function
 
-Public Function BanIpQuita(ByVal IP As String) As Boolean
+Public Function BanIpQuita(ByVal ip As String) As Boolean
     '***************************************************
     'Author: Unknown
     'Last Modification: -
@@ -517,14 +518,14 @@ Public Function BanIpQuita(ByVal IP As String) As Boolean
 
     Dim n As Long
     
-    n = BanIpBuscar(IP)
+    n = BanIpBuscar(ip)
 
     If n > 0 Then
         Call BanIps.Remove(n)
         Call BanIpGuardar
         
         ' Agrego la regla al firewall para que borre la regla de la IP a desbanear.
-        Call Shell("netsh.exe advfirewall firewall delete rule name=""Baneo de IP " & IP & """ dir=in protocol=any action=block remoteip=" & IP)
+        Call Shell("netsh.exe advfirewall firewall delete rule name=""Baneo de IP " & ip & """ dir=in protocol=any action=block remoteip=" & ip)
         
         BanIpQuita = True
     Else

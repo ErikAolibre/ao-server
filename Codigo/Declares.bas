@@ -1645,7 +1645,7 @@ Public Type User
         UpTime As Long
     #End If
 
-    IP As String
+    ip As String
     
     ComUsu As tCOmercioUsuario
     

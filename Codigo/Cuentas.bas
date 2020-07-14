@@ -49,27 +49,27 @@ Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
 
 
     If PersonajeExiste(UserName) Then
+        
         UserName = UCase$(UserName)
 
-        Dim AccountHash        As String
         Dim LoopC              As Long
         Dim NumberOfCharacters As Byte
         Dim LastCharacterName  As String
         Dim AccountCharfile    As String
         Dim CurrentCharacter   As String
 
-        AccountHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-        AccountCharfile = AccountPath & AccountHash & ".ach"
+        AccountCharfile = AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc"
         NumberOfCharacters = val(GetVar(AccountCharfile, "INIT", "CantidadPersonajes"))
 
         'Informacion del ultimo pj
         LastCharacterName = GetVar(AccountCharfile, "PERSONAJES", "Personaje" & NumberOfCharacters)
 
-
         For LoopC = 1 To NumberOfCharacters
+        
             CurrentCharacter = GetVar(AccountCharfile, "PERSONAJES", "Personaje" & LoopC)
 
             If UCase$(CurrentCharacter) = UserName Then
+                
                 'Movemos el ultimo personaje al slot del borrado
                 Call WriteVar(AccountCharfile, "PERSONAJES", "Personaje" & LoopC, LastCharacterName)
                 
@@ -80,12 +80,14 @@ Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
                 Call WriteVar(AccountCharfile, "INIT", "CANTIDADPERSONAJES", NumberOfCharacters - 1)
 
                 'Por ultimo borramos el archivo.
-                Kill (CharPath & UCase$(UserName) & ".chr")
+                Call Kill(CharPath & UCase$(UserName) & ".chr")
                 
                 Exit Sub
+                
             End If
 
         Next LoopC
+        
     End If
 
 ErrorHandler:
@@ -137,31 +139,26 @@ Public Sub CopyUserCharfile(ByVal UserName As String, ByVal newName As String)
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 24/10/2018
     '***************************************************
+    
     UserName = UCase$(UserName)
     newName = UCase$(newName)
 
-    Dim AccountHash        As String
-
     Dim LoopC              As Long
-
     Dim NumberOfCharacters As Byte
-
     Dim AccountCharfile    As String
-
     Dim CurrentCharacter   As String
 
-    AccountHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-    AccountCharfile = AccountPath & AccountHash & ".ach"
+    AccountCharfile = AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc"
     NumberOfCharacters = val(GetVar(AccountCharfile, "INIT", "CantidadPersonajes"))
 
     If NumberOfCharacters > 0 Then
 
         For LoopC = 1 To NumberOfCharacters
+            
             CurrentCharacter = GetVar(AccountCharfile, "PERSONAJES", "Personaje" & LoopC)
 
             If UCase$(CurrentCharacter) = UserName Then
                 Call WriteVar(AccountCharfile, "PERSONAJES", "Personaje" & LoopC, newName)
-
             End If
 
         Next LoopC
@@ -234,14 +231,8 @@ Public Function GetUserSaltCharfile(ByVal UserName As String) As String
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 20/09/2018
     '***************************************************
-    Dim AccountHash As String
 
-    Dim AccountName As String
-
-    AccountHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-    AccountName = GetVar(AccountPath & AccountHash & ".ach", "INIT", "UserName")
-
-    GetUserSaltCharfile = GetVar(AccountPath & AccountName & ".acc", "INIT", "Salt")
+    GetUserSaltCharfile = GetVar(AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc", "INIT", "Salt")
 
 End Function
 
@@ -251,14 +242,8 @@ Public Function GetUserPasswordCharfile(ByVal UserName As String) As String
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 20/09/2018
     '***************************************************
-    Dim AccountHash As String
 
-    Dim AccountName As String
-
-    AccountHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-    AccountName = GetVar(AccountPath & AccountHash & ".ach", "INIT", "UserName")
-
-    GetUserPasswordCharfile = GetVar(AccountPath & AccountName & ".acc", "INIT", "Password")
+    GetUserPasswordCharfile = GetVar(AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc", "INIT", "Password")
 
 End Function
 
@@ -300,15 +285,9 @@ Sub StorePasswordSaltCharfile(ByVal UserName As String, _
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 21/09/2018
     '***************************************************
-    Dim AccountHash As String
-
-    Dim AccountName As String
-
-    AccountHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-    AccountName = GetVar(AccountPath & AccountHash & ".ach", "INIT", "UserName")
-
-    Call WriteVar(AccountPath & AccountName & ".acc", "INIT", "Password", Password)
-    Call WriteVar(AccountPath & AccountName & ".acc", "INIT", "Salt", Salt)
+    
+    Call WriteVar(AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc", "INIT", "Password", Password)
+    Call WriteVar(AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc", "INIT", "Salt", Salt)
 
 End Sub
 
@@ -762,23 +741,8 @@ Public Function CuentaExisteCharfile(ByVal UserName As String) As Boolean
 
 End Function
 
-Public Function PersonajePerteneceCuentaCharfile(ByVal UserName As String, _
-                                                 ByVal AccountHash As String) As Boolean
-
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 18/10/2018
-    '***************************************************
-    Dim CharfileHash As String
-
-    CharfileHash = GetVar(CharPath & UserName & ".chr", "INIT", "AccountHash")
-
-    PersonajePerteneceCuentaCharfile = (AccountHash = CharfileHash)
-
-End Function
-
 Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
-                                     ByVal Userindex As Integer)
+                                     ByVal UserIndex As Integer)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -787,7 +751,7 @@ Public Sub SaveUserToAccountCharfile(ByVal UserName As String, _
     Dim CantidadPersonajes As Byte
     Dim AccountCharfile    As String
 
-    AccountCharfile = AccountPath & UCase$(UserList(Userindex).Account.UserName) & ".acc"
+    AccountCharfile = AccountPath & UCase$(UserList(UserIndex).Account.UserName) & ".acc"
 
     If FileExist(AccountCharfile) Then
         
@@ -830,7 +794,6 @@ Public Sub LoginAccountCharfile(ByVal UserIndex As Integer, ByVal UserName As St
 
     Dim i                  As Long
 
-    Dim AccountHash        As String
     Dim NumberOfCharacters As Byte
     Dim CurrentCharacter   As String
 

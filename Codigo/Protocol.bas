@@ -1605,10 +1605,9 @@ Private Sub HandleDeleteChar(ByVal Userindex As Integer)
 'Last Modification: 07/01/20
 '
 '***************************************************
-    If UserList(Userindex).incomingData.Length < 6 Then
+    If UserList(Userindex).incomingData.Length < 4 Then
         Err.Raise UserList(Userindex).incomingData.NotEnoughDataErrCode
         Exit Sub
-
     End If
     
     On Error GoTo ErrHandler
@@ -1623,14 +1622,13 @@ Private Sub HandleDeleteChar(ByVal Userindex As Integer)
     Call buffer.ReadByte
 
     Dim UserName    As String
-    Dim AccountHash As String
+    
     UserName = buffer.ReadASCIIString()
-    AccountHash = buffer.ReadASCIIString()
     
     'If we got here then packet is complete, copy data back to original queue
     Call UserList(Userindex).incomingData.CopyBuffer(buffer)
     
-    Call BorrarUsuario(Userindex, UserName, AccountHash)
+    Call BorrarUsuario(Userindex, UserName)
 
     'Enviamos paquete para mostrar mensaje satisfactorio en el cliente
     Call UserList(Userindex).outgoingData.WriteByte(ServerPacketID.DeletedChar)
@@ -1665,9 +1663,8 @@ Private Sub HandleLoginExistingChar(ByVal Userindex As Integer)
     '
     '***************************************************
     If UserList(Userindex).incomingData.Length < 6 Then
-        Err.Raise UserList(Userindex).incomingData.NotEnoughDataErrCode
+        Call Err.Raise(UserList(Userindex).incomingData.NotEnoughDataErrCode)
         Exit Sub
-
     End If
     
     On Error GoTo ErrHandler
@@ -1681,7 +1678,6 @@ Private Sub HandleLoginExistingChar(ByVal Userindex As Integer)
     Call buffer.ReadByte
 
     Dim UserName    As String
-    Dim AccountHash As String
     Dim version     As String
     
     UserName = buffer.ReadASCIIString()
@@ -1769,7 +1765,7 @@ Private Sub HandleLoginNewChar(ByVal Userindex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(Userindex).incomingData.Length < 15 Then
+    If UserList(Userindex).incomingData.Length < 13 Then
         Err.Raise UserList(Userindex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -1786,7 +1782,6 @@ Private Sub HandleLoginNewChar(ByVal Userindex As Integer)
     Call buffer.ReadByte
 
     Dim UserName    As String
-    Dim AccountHash As String
     Dim version     As String
     Dim race        As eRaza
     Dim gender      As eGenero
@@ -1811,25 +1806,19 @@ Private Sub HandleLoginNewChar(ByVal Userindex As Integer)
     If PuedeCrearPersonajes = 0 Then
         Call WriteErrorMsg(Userindex, "La creacion de personajes en este servidor se ha deshabilitado.")
         Call CloseSocket(Userindex)
-        
         Exit Sub
-
     End If
     
     If ServerSoloGMs <> 0 Then
         Call WriteErrorMsg(Userindex, "Servidor restringido a administradores. Consulte la pagina oficial o el foro oficial para mas informacion.")
         Call CloseSocket(Userindex)
-        
         Exit Sub
-
     End If
     
-    If aClon.MaxPersonajes(UserList(Userindex).IP) Then
+    If aClon.MaxPersonajes(UserList(Userindex).ip) Then
         Call WriteErrorMsg(Userindex, "Has creado demasiados personajes.")
         Call CloseSocket(Userindex)
-        
         Exit Sub
-
     End If
                                         
     If Not VersionOK(version) Then
@@ -3438,7 +3427,7 @@ Private Sub HandleWorkLeftClick(ByVal Userindex As Integer)
                 
                 'If it's outside range log it and exit
                 If Abs(.Pos.X - X) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
-                    Call LogCheating("Ataque fuera de rango de " & .Name & "(" & .Pos.Map & "/" & .Pos.X & "/" & .Pos.Y & ") ip: " & .IP & " a la posicion (" & .Pos.Map & "/" & X & "/" & Y & ")")
+                    Call LogCheating("Ataque fuera de rango de " & .Name & "(" & .Pos.Map & "/" & .Pos.X & "/" & .Pos.Y & ") ip: " & .ip & " a la posicion (" & .Pos.Map & "/" & X & "/" & Y & ")")
                     Exit Sub
                 End If
                 
@@ -4025,7 +4014,7 @@ Private Sub HandleModifySkills(ByVal Userindex As Integer)
             points(i) = .incomingData.ReadByte()
             
             If points(i) < 0 Then
-                Call LogHackAttemp(.Name & " IP:" & .IP & " trato de hackear los skills.")
+                Call LogHackAttemp(.Name & " IP:" & .ip & " trato de hackear los skills.")
                 .Stats.SkillPts = 0
                 Call CloseSocket(Userindex)
                 Exit Sub
@@ -4036,7 +4025,7 @@ Private Sub HandleModifySkills(ByVal Userindex As Integer)
         Next i
         
         If Count > .Stats.SkillPts Then
-            Call LogHackAttemp(.Name & " IP:" & .IP & " trato de hackear los skills.")
+            Call LogHackAttemp(.Name & " IP:" & .ip & " trato de hackear los skills.")
             Call CloseSocket(Userindex)
             Exit Sub
 
@@ -6106,13 +6095,13 @@ Private Sub HandleQuit(ByVal Userindex As Integer)
     Dim tUser        As Integer
 
     With UserList(Userindex)
+        
         'Remove packet ID
         Call .incomingData.ReadByte
 
         If .flags.Paralizado = 1 Then
             Call WriteConsoleMsg(Userindex, "No puedes salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
-
         End If
         
         'exit secure commerce
@@ -6120,6 +6109,7 @@ Private Sub HandleQuit(ByVal Userindex As Integer)
             tUser = .ComUsu.DestUsu
             
             If UserList(tUser).flags.UserLogged Then
+                
                 If UserList(tUser).ComUsu.DestUsu = Userindex Then
                     Call WriteConsoleMsg(tUser, "Comercio cancelado por el otro usuario.", FontTypeNames.FONTTYPE_WARNING)
                     Call FinComerciarUsu(tUser)
@@ -8642,7 +8632,7 @@ Private Sub HandleGuildFundation(ByVal Userindex As Integer)
         
         If HasFound(.Name) Then
             Call WriteConsoleMsg(Userindex, "Ya has fundado un clan, no puedes fundar otro!", FontTypeNames.FONTTYPE_INFOBOLD)
-            Call LogCheating("El usuario " & .Name & " ha intentado fundar un clan ya habiendo fundado otro desde la IP " & .IP)
+            Call LogCheating("El usuario " & .Name & " ha intentado fundar un clan ya habiendo fundado otro desde la IP " & .ip)
             Exit Sub
 
         End If
@@ -12740,19 +12730,19 @@ Private Sub HandleNickToIP(ByVal Userindex As Integer)
             
             If tUser > 0 Then
                 If UserList(tUser).flags.Privilegios And priv Then
-                    Call WriteConsoleMsg(Userindex, "El ip de " & UserName & " es " & UserList(tUser).IP, FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "El ip de " & UserName & " es " & UserList(tUser).ip, FontTypeNames.FONTTYPE_INFO)
 
-                    Dim IP    As String
+                    Dim ip    As String
 
                     Dim lista As String
 
                     Dim LoopC As Long
 
-                    IP = UserList(tUser).IP
+                    ip = UserList(tUser).ip
 
                     For LoopC = 1 To LastUser
 
-                        If UserList(LoopC).IP = IP Then
+                        If UserList(LoopC).ip = ip Then
                             If LenB(UserList(LoopC).Name) <> 0 And UserList(LoopC).flags.UserLogged Then
                                 If UserList(LoopC).flags.Privilegios And priv Then
                                     lista = lista & UserList(LoopC).Name & ", "
@@ -12766,7 +12756,7 @@ Private Sub HandleNickToIP(ByVal Userindex As Integer)
                     Next LoopC
 
                     If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-                    Call WriteConsoleMsg(Userindex, "Los personajes con ip " & IP & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "Los personajes con ip " & ip & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -12823,7 +12813,7 @@ Private Sub HandleIPToNick(ByVal Userindex As Integer)
         'Remove packet ID
         Call .incomingData.ReadByte
         
-        Dim IP    As String
+        Dim ip    As String
 
         Dim LoopC As Long
 
@@ -12831,14 +12821,14 @@ Private Sub HandleIPToNick(ByVal Userindex As Integer)
 
         Dim priv  As PlayerType
         
-        IP = .incomingData.ReadByte() & "."
-        IP = IP & .incomingData.ReadByte() & "."
-        IP = IP & .incomingData.ReadByte() & "."
-        IP = IP & .incomingData.ReadByte()
+        ip = .incomingData.ReadByte() & "."
+        ip = ip & .incomingData.ReadByte() & "."
+        ip = ip & .incomingData.ReadByte() & "."
+        ip = ip & .incomingData.ReadByte()
         
         If .flags.Privilegios And (PlayerType.User Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
-        Call LogGM(.Name, "IP2NICK Solicito los Nicks de IP " & IP)
+        Call LogGM(.Name, "IP2NICK Solicito los Nicks de IP " & ip)
         
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
             priv = PlayerType.User Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin
@@ -12849,7 +12839,7 @@ Private Sub HandleIPToNick(ByVal Userindex As Integer)
 
         For LoopC = 1 To LastUser
 
-            If UserList(LoopC).IP = IP Then
+            If UserList(LoopC).ip = ip Then
                 If LenB(UserList(LoopC).Name) <> 0 And UserList(LoopC).flags.UserLogged Then
                     If UserList(LoopC).flags.Privilegios And priv Then
                         lista = lista & UserList(LoopC).Name & ", "
@@ -12863,7 +12853,7 @@ Private Sub HandleIPToNick(ByVal Userindex As Integer)
         Next LoopC
         
         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-        Call WriteConsoleMsg(Userindex, "Los personajes con ip " & IP & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "Los personajes con ip " & ip & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
 
     End With
 
@@ -14561,7 +14551,7 @@ Private Sub HandleBanIP(ByVal Userindex As Integer)
         Else
             tUser = NameIndex(buffer.ReadASCIIString())
             
-            If tUser > 0 Then bannedIP = UserList(tUser).IP
+            If tUser > 0 Then bannedIP = UserList(tUser).ip
 
         End If
         
@@ -14581,7 +14571,7 @@ Private Sub HandleBanIP(ByVal Userindex As Integer)
                     For i = 1 To LastUser
 
                         If UserList(i).ConnIDValida Then
-                            If UserList(i).IP = bannedIP Then
+                            If UserList(i).ip = bannedIP Then
                                 Call BanCharacter(Userindex, UserList(i).Name, "IP POR " & Reason)
 
                             End If
@@ -22707,7 +22697,7 @@ Public Sub WriteRecordDetails(ByVal Userindex As Integer, ByVal RecordIndex As I
         'Escribo la IP segUn el estado del personaje
         If tIndex > 0 Then
             'La IP Actual
-            tmpStr = UserList(tIndex).IP
+            tmpStr = UserList(tIndex).ip
         Else 'String nulo
             tmpStr = vbNullString
 
