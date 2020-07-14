@@ -314,7 +314,7 @@ Public Sub BorrarUsuario(ByVal Userindex As Integer, ByVal UserName As String)
     End If
     
     If Not Database_Enabled Then
-        Call BorrarUsuarioCharfile(UserName)
+        Call BorrarUsuarioCharfile(UserName, UserIndex)
         
     Else
         Call BorrarUsuarioDatabase(UserName)

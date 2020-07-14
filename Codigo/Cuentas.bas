@@ -38,7 +38,7 @@ Public Function BANCheckCharfile(ByVal UserName As String) As Boolean
 
 End Function
 
-Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
+Public Sub BorrarUsuarioCharfile(ByVal UserName As String, ByVal AccountTargetIndex As Integer)
 
 '***************************************************
 'Author: Juan Andres Dalmasso (CHOTS)
@@ -46,7 +46,6 @@ Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
 'Ahora se pueden borrar los charfiles de la cuenta correctamente (Recox)
 '***************************************************
     On Error GoTo ErrorHandler
-
 
     If PersonajeExiste(UserName) Then
         
@@ -57,8 +56,9 @@ Public Sub BorrarUsuarioCharfile(ByVal UserName As String)
         Dim LastCharacterName  As String
         Dim AccountCharfile    As String
         Dim CurrentCharacter   As String
-
-        AccountCharfile = AccountPath & UserList(NameIndex(UserName)).Account.UserName & ".acc"
+        Dim TargetIndex        As Integer
+        
+        AccountCharfile = AccountPath & UserList(AccountTargetIndex).Account.UserName & ".acc"
         NumberOfCharacters = val(GetVar(AccountCharfile, "INIT", "CantidadPersonajes"))
 
         'Informacion del ultimo pj

@@ -1605,7 +1605,7 @@ Private Sub HandleDeleteChar(ByVal Userindex As Integer)
 'Last Modification: 07/01/20
 '
 '***************************************************
-    If UserList(Userindex).incomingData.Length < 4 Then
+    If UserList(Userindex).incomingData.Length < 3 Then
         Err.Raise UserList(Userindex).incomingData.NotEnoughDataErrCode
         Exit Sub
     End If
@@ -1621,18 +1621,17 @@ Private Sub HandleDeleteChar(ByVal Userindex As Integer)
     'Remove packet ID
     Call buffer.ReadByte
 
-    Dim UserName    As String
-    
-    UserName = buffer.ReadASCIIString()
+    Dim UserName As String: UserName = buffer.ReadASCIIString()
     
     'If we got here then packet is complete, copy data back to original queue
     Call UserList(Userindex).incomingData.CopyBuffer(buffer)
-    
+        
+    'Borramos el personaje
     Call BorrarUsuario(Userindex, UserName)
-
+        
     'Enviamos paquete para mostrar mensaje satisfactorio en el cliente
     Call UserList(Userindex).outgoingData.WriteByte(ServerPacketID.DeletedChar)
-    
+
     Exit Sub
     
 ErrHandler:
