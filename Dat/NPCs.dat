@@ -13561,9 +13561,9 @@ BackUp=0
 QuestNumber=2
 
 [NPC941]
-Name=Alfonsin [Quest 6 Banderbill]
+Name=Icaro [Quest 6 Banderbill]
 NpcType=0
-Desc=El clan de Asesinos y Bandidos no para de fastidiar a los ciudadanos de Argentum por eso te pedimos que acabes con esta plaga de una vez por todas. Escribe /QUEST.
+Desc=¡Nesecitamos ayuda ! Escribe /QUEST.
 Head=101
 Heading=3
 Body=349
@@ -13578,9 +13578,9 @@ BackUp=0
 QuestNumber=6
 
 [NPC942]
-Name=Charly Garcia [Quest 7 Arkhein]
+Name=Tulkas [Quest 7 Arkhein]
 NpcType=0
-Desc=Necesitamos minerales para construir el anillo de bodas del primer ministro, tenes que matar 3 Etogniles de cada raza Bronce, Plata y Oro. Me ayudas? Escribe /QUEST.
+Desc=Tengo un trabajo para ti... Escribe /QUEST.
 Head=101
 Heading=3
 Body=343
@@ -13595,9 +13595,9 @@ BackUp=0
 QuestNumber=7
 
 [NPC943]
-Name=Favaloro [Quest 8 Lindos]
+Name=Sir Arthur [Quest 8 Lindos]
 NpcType=0
-Desc=Venga a mis hijos que murieron en manos de los titanes, necesito que mates a todos ellos por mi, podrias? Escribe /QUEST.
+Desc=Busco gente valiente ¿Tienes un momento? Escribe /QUEST.
 Head=101
 Heading=3
 Body=342
@@ -13612,9 +13612,9 @@ BackUp=0
 QuestNumber=8
 
 [NPC944]
-Name=Calamaro [Quest 9 Arghal]
+Name=Mithandrill [Quest 9 Arghal]
 NpcType=0
-Desc=Alguien se fumo mi marihuana, necesito recuperarla! Escribe /QUEST.
+Desc=Nesecito ayuda! Escribe /QUEST.
 Head=101
 Heading=3
 Body=341
@@ -13629,9 +13629,9 @@ BackUp=0
 QuestNumber=9
 
 [NPC945]
-Name=Leon Gieco [Quest 10 Ciudad Abandonada]
+Name=Orfeo [Quest 10 Ciudad Abandonada]
 NpcType=0
-Desc=Tengo un buen premio, te estaba esperando hace mucho tiempo viajero, queres un buen desafio? Escribe /QUEST.
+Desc=¡Juro Vengar esta desgracia! ¿me ayudas? Escribe /QUEST.
 Head=101
 Heading=3
 Body=339
